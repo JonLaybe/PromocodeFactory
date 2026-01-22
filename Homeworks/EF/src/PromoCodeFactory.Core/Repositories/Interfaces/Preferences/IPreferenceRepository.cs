@@ -7,6 +7,10 @@ namespace PromoCodeFactory.Core.Repositories.Interfaces.Preferences
 {
     public interface IPreferenceRepository
     {
-        Task<IList<Preference>> GetPreferenceByIdsAsync(IReadOnlyList<Guid> PreferenceIds);
+        Task<Preference> GetPreferenceByIdAsync(Guid id);
+
+        Task<IList<Preference>> GetAllPreferencesAsync();
+
+        Task<IList<Preference>> GetListPreferencesByIdsAsync(IReadOnlyList<Guid> PreferenceIds);
     }
 }

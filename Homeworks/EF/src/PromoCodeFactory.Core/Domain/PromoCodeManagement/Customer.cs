@@ -17,6 +17,6 @@ namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
         //TODO: Списки Preferences и Promocodes 
         public IList<Preference> Preference { get; set; }
 
-        public PromoCode PromoCode { get; set; }
+        public IList<PromoCode> PromoCode { get; set; }
     }
 }

@@ -9,7 +9,9 @@ using PromoCodeFactory.Core.Domain.PromoCodeManagement;
 using PromoCodeFactory.Core.Repositories.Customers;
 using PromoCodeFactory.Core.Repositories.Interfaces.Customers;
 using PromoCodeFactory.Core.Repositories.Interfaces.Preferences;
+using PromoCodeFactory.Core.Repositories.Interfaces.PromoCodes;
 using PromoCodeFactory.Core.Repositories.Preferences;
+using PromoCodeFactory.Core.Repositories.PromoCodes;
 using PromoCodeFactory.DataAccess.Data;
 using PromoCodeFactory.DataAccess.Extensions;
 using PromoCodeFactory.DataAccess.Persistence;
@@ -37,7 +39,8 @@ namespace PromoCodeFactory.WebHost
                 new InMemoryRepository<Customer>(FakeDataFactory.Customers));
 
             services.AddScoped<ICustomerRepository, CustomerRepository>()
-                .AddScoped<IPreferenceRepository, PreferenceRepository>();
+                .AddScoped<IPreferenceRepository, PreferenceRepository>()
+                .AddScoped<IPromoCodeRepository, PromoCodeRepository>();
 
             services.AddOpenApiDocument(options =>
             {

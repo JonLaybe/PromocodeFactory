@@ -5,6 +5,7 @@ using PromoCodeFactory.Core.Repositories.Interfaces.Preferences;
 using PromoCodeFactory.WebHost.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PromoCodeFactory.WebHost.Controllers
@@ -28,12 +29,19 @@ namespace PromoCodeFactory.WebHost.Controllers
             this.preferenceRepository = preferenceRepository;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<ActionResult<CustomerShortResponse>> GetCustomersAsync()
         {
             //TODO: Добавить получение списка клиентов
 
-            var customers = await this.customerRepository.GetCustomersAsync();
+            var customers = (await this.customerRepository.GetCustomersAsync())
+                .Select(x => new CustomerShortResponse()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                });
 
             return Ok(customers);
         }
@@ -46,11 +54,27 @@ namespace PromoCodeFactory.WebHost.Controllers
             {
                 var customer = await this.customerRepository.GetCustomerAsync(id);
 
-                return Ok(customer);
+                return Ok(new CustomerResponse()
+                {
+                    Id = id,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Email = customer.Email,
+                    Preferences = customer.Preference,
+                    PromoCodes = customer.PromoCode?.Select(x => new PromoCodeShortResponse()
+                    {
+                        Id = x.Id,
+                        ServiceInfo = x.ServiceInfo,
+                        Code = x.Code,
+                        PartnerName = x.PartnerName,
+                        BeginDate = x.BeginDate.ToString("dd:MM:yyyy"),
+                        EndDate = x.BeginDate.ToString("dd:MM:yyyy")
+                    }).ToList(),
+                });
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest();
+                return BadRequest(ex);
             }
         }
 
@@ -61,7 +85,7 @@ namespace PromoCodeFactory.WebHost.Controllers
             try
             {
                 var preferences = await this.preferenceRepository
-                    .GetPreferenceByIdsAsync(request.PreferenceIds);
+                    .GetListPreferencesByIdsAsync(request.PreferenceIds);
 
                 await this.customerRepository.CreateCustomerAsync(new Customer()
                 {
@@ -69,7 +93,7 @@ namespace PromoCodeFactory.WebHost.Controllers
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Email = request.Email,
-                    Preference = preferences,
+                    Preference = preferences?.ToList(),
                 });
 
                 await this.customerRepository.SaveChangesAsync();
@@ -91,7 +115,7 @@ namespace PromoCodeFactory.WebHost.Controllers
 
             if (request.PreferenceIds.Count > 0)
                 preferences = await this.preferenceRepository
-                    .GetPreferenceByIdsAsync(request.PreferenceIds);
+                    .GetListPreferencesByIdsAsync(request.PreferenceIds);
 
             await this.customerRepository.EditCustomersAsync(id, new Customer()
             {

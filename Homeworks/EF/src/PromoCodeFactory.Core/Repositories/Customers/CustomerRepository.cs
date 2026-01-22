@@ -19,11 +19,16 @@ namespace PromoCodeFactory.Core.Repositories.Customers
         }
 
         public async Task<IReadOnlyList<Customer>> GetCustomersAsync() =>
-            await this.application.Customers.Include(x => x.Preference).ToListAsync();
+            await this.application.Customers
+                .Include(x => x.Preference)
+                .Include(x => x.PromoCode)
+                .ToListAsync();
 
         public async Task<Customer> GetCustomerAsync(Guid id)
         {
             var customer = await this.application.Customers.Where(x => x.Id == id)
+                .Include(x => x.Preference)
+                .Include(x => x.PromoCode)
                 .FirstOrDefaultAsync();
 
             if (customer == null)

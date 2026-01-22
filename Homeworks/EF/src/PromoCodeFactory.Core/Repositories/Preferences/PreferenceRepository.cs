@@ -18,7 +18,21 @@ namespace PromoCodeFactory.Core.Repositories.Preferences
             this.applicationDbContext = applicationDbContext;
         }
 
-        public async Task<IList<Preference>> GetPreferenceByIdsAsync(IReadOnlyList<Guid> PreferenceIds)
+        public async Task<IList<Preference>> GetAllPreferencesAsync() =>
+            await this.applicationDbContext.Preferences.ToListAsync();
+
+        public async Task<Preference> GetPreferenceByIdAsync(Guid id)
+        {
+            var preferance = await this.applicationDbContext.Preferences
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            if (preferance == null)
+                throw new ArgumentNullException();
+
+            return preferance;
+        }
+
+        public async Task<IList<Preference>> GetListPreferencesByIdsAsync(IReadOnlyList<Guid> PreferenceIds)
         {
             var preferences = await this.applicationDbContext.Preferences
                 .Where(x => PreferenceIds.Contains(x.Id)).ToListAsync();

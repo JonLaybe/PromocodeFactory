@@ -17,7 +17,7 @@ namespace PromoCodeFactory.DataAccess.Persistence.Configurations.Customers
             _ = builder.HasMany(c => c.Preference)
                 .WithMany();
 
-            _ = builder.HasOne(c => c.PromoCode)
+            _ = builder.HasMany(c => c.PromoCode)
                 .WithMany();
         }
     }
